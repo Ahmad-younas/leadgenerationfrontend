@@ -38,7 +38,9 @@ const LineChart: React.FC = () => {
         const sortedData: JobCount[] = response.data.sort((a: JobCount, b: JobCount) => {
           return monthOrder.indexOf(a.month_name) - monthOrder.indexOf(b.month_name);
         });
+        console.log(response.data);
         const jobCounts = sortedData.map((item:JobCount) => item.total_jobs_on_each_month);
+        console.log("JobCounts", jobCounts);
 
         // Update the chart data with the API response
         setChartData([

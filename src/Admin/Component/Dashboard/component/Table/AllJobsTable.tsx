@@ -18,6 +18,7 @@ import { Simulate } from 'react-dom/test-utils';
 import error = Simulate.error;
 import { ViewEmployeeJob } from './ViewEmployeeJob';
 import { SearchIcon } from '@chakra-ui/icons';
+import { EditEmployeeJob } from './EditEmployeeJob';
 interface Jobs {
   title:string,
   firstName: string;
@@ -172,6 +173,7 @@ export const AllJobsTable = () => {
   return (
     <React.Fragment>
       <ViewEmployeeJob isOpenModel={isOpenModel} onCloseModel={onCloseModel} data={editData}/>
+      <EditEmployeeJob isOpenModel={isOpenModel} onCloseModel={onCloseModel} data={editData}/>
       <Box bg="white">
         <TableContainer p={'30px'}>
 

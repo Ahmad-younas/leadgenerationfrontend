@@ -10,15 +10,18 @@ import {
   Menu,
   MenuButton,
   MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
-import { IoAddCircle } from 'react-icons/io5';
-import { EmployeeNavbarLinkProps } from '../interfaces';
+
 import { BellIcon } from '@chakra-ui/icons';
-import { AiOutlineUser } from 'react-icons/ai';
 import { PersonIcon } from '../Components/Icons/Icons';
-export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (
-  props
-) => {
+import { EmployeeNavbarLinkProps } from '../interfaces';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { logout } from '../redux/authSlice';
+
+export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (props) => {
+  const dispatch = useDispatch<AppDispatch>();
   const {
     brandText,
     brandTextS,
@@ -27,7 +30,9 @@ export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (
     navbarIconColor,
     backgroundColor,
   } = props;
+
   let navbarIcon = useColorModeValue('gray.500', 'gray.200');
+
   return (
     <Flex
       minH={'75px'}
@@ -36,7 +41,7 @@ export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (
       flexDirection={'row'}
       justifyContent={'space-between'}
       bg={backgroundColor}
-      line-height={'25.6px'}
+      lineHeight={'25.6px'}
       w={'100%'}
       pt="8px"
       top="18px"
@@ -52,9 +57,7 @@ export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (
       <Box>
         <Breadcrumb>
           <BreadcrumbItem color={mainTextColor}>
-            <BreadcrumbLink color={secondaryTextColor}>
-              Dashboard
-            </BreadcrumbLink>
+            <BreadcrumbLink color={secondaryTextColor}>Dashboard</BreadcrumbLink>
           </BreadcrumbItem>
 
           <BreadcrumbItem color={mainTextColor}>
@@ -92,6 +95,11 @@ export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (
           <MenuButton style={{ marginLeft: '10px' }}>
             <PersonIcon color={navbarIconColor} w="25px" h="25px" />
           </MenuButton>
+          <MenuList>
+            <MenuItem onClick={()=>dispatch(logout())}>Logout</MenuItem>
+          </MenuList>
+        </Menu>
+        <Menu>
           <MenuButton style={{ marginLeft: '10px' }}>
             <BellIcon color={navbarIconColor} w="25px" h="25px" />
           </MenuButton>

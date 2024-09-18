@@ -18,6 +18,8 @@ import { RiFileExcel2Fill } from 'react-icons/ri';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { IoAddCircle } from 'react-icons/io5';
+import { FiExternalLink } from "react-icons/fi";
+
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -150,16 +152,6 @@ export const Header: React.FC = () => {
                               secondaryTextColor={secondaryText}
                               navbarIconColor={navbarIcon}
                               backgroundColor={'transparent'}/>
-          {/*<Box display="flex" alignItems={'start'}>*/}
-          {/*  <Menu>*/}
-          {/*    <AvatarGroup spacing="1rem">*/}
-          {/*      <Avatar bg="gray.700" icon={<AiOutlineUser fontSize="1.5rem" />} />*/}
-          {/*    </AvatarGroup>*/}
-          {/*    <MenuButton style={{ marginLeft: '10px' }}>*/}
-          {/*      <BellIcon color={navbarIcon} w="25px" h="25px" />*/}
-          {/*    </MenuButton>*/}
-          {/*  </Menu>*/}
-          {/*</Box>*/}
         </Box>
         <Flex
           direction={{ sm: 'column', md: 'row' }}
@@ -272,8 +264,14 @@ export const Header: React.FC = () => {
                 py="10px"
                 cursor="pointer"
               >
-                <Text>
-                  <h1>Hello-world</h1>
+                <FiExternalLink />
+                <Text
+                  fontSize={{ sm: 'sm', md: 'md', xl: '12px' }}
+                  p={'5px'}
+                  color={textColor}
+                  fontWeight="semibold"
+                  textTransform={'uppercase'}>
+                  All Job
                 </Text>
               </Flex>
             </Button>

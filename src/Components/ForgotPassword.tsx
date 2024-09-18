@@ -57,30 +57,41 @@ export const ForgotPassword: React.FC = () => {
 
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     try {
-      const response = await axios.post('/forgotpassword', {
+      const response = await axios.post('http://localhost:3002/api/forgetPassword', {
         email: data.email,
       });
-
-      console.log(response.data);
+      console.log("response",response.data);
+      if (response.status === 200) {
+        toast({
+          title: 'Mail Sent.',
+          description: "We've sent Reset password link to your email.",
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+        });
+        reset();
+      }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        console.error(error.response?.data ?? "'An unknown error occurred'");
+        console.error('An unexpected error occurred', error.response?.status);
+        let status:number | undefined = error.response?.status;
+        let message:string = error.response?.data.message;
+        if (error.response?.status === status) {
+          toast({
+            title: 'Mail Sent.',
+            description: message,
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+            position: 'top-right',
+          });
+        }
+        console.error("error",error.response?.data ?? "'An unknown error occurred'");
       } else {
         console.error('An unexpected error occurred', error);
       }
     }
-    if (true) {
-      toast({
-        title: 'Mail Sent.',
-        description: "We've sent Reset password link to your email.",
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-        position: 'top-right',
-      });
-      reset();
-    }
-    console.log(data);
   };
 
   return (

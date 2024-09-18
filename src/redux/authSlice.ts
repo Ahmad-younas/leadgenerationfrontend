@@ -1,4 +1,3 @@
-// src/redux/authSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { jwtDecode } from 'jwt-decode'; // Correct import
 
@@ -57,7 +56,7 @@ const authSlice = createSlice({
     // Logout reducer
     logout: (state) => {
       state.user = null;
-      localStorage.removeItem('authToken'); // Remove token from localStorage
+      localStorage.removeItem('authToken');// Remove token from localStorage
     },
   },
 });

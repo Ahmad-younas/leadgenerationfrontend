@@ -22,7 +22,7 @@ export const Dashboard = () => {
 
         <SimpleGrid gap={{ sm: '12px' }} columns={1}>
           <ChartStatistics
-            title={'Sales Overview'}
+            title={'Job Overview'}
             percentage={5}
             chart={<LineChart />}
           />
