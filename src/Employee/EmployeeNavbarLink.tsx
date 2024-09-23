@@ -9,8 +9,6 @@ import {
   Link,
   Menu,
   MenuButton,
-  MenuList,
-  MenuItem,
 } from '@chakra-ui/react';
 
 import { BellIcon } from '@chakra-ui/icons';
@@ -19,9 +17,10 @@ import { EmployeeNavbarLinkProps } from '../interfaces';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { logout } from '../redux/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (props) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const {
     brandText,
     brandTextS,
@@ -30,8 +29,6 @@ export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (props) => 
     navbarIconColor,
     backgroundColor,
   } = props;
-
-  let navbarIcon = useColorModeValue('gray.500', 'gray.200');
 
   return (
     <Flex
@@ -92,12 +89,9 @@ export const EmployeeNavbarLink: React.FC<EmployeeNavbarLinkProps> = (props) => 
       </Box>
       <Box display={'flex'} alignItems={'start'}>
         <Menu>
-          <MenuButton style={{ marginLeft: '10px' }}>
+          <MenuButton style={{ marginLeft: '10px' }} onClick={()=>navigate('/admin/setting')}>
             <PersonIcon color={navbarIconColor} w="25px" h="25px" />
           </MenuButton>
-          <MenuList>
-            <MenuItem onClick={()=>dispatch(logout())}>Logout</MenuItem>
-          </MenuList>
         </Menu>
         <Menu>
           <MenuButton style={{ marginLeft: '10px' }}>

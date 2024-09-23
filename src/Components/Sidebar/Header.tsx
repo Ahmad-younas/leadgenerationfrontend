@@ -255,7 +255,9 @@ export const Header: React.FC = () => {
                 </Text>
               </Flex>
             </Button>
-            <Button p="0px" bg="transparent" _hover={{ bg: 'none' }}>
+            <Button p="0px" bg="transparent" _hover={{ bg: 'none' }} onClick={() => {
+              navigate('/admin/alljobs');
+            }}>
               <Flex
                 align="center"
                 w={{ lg: '135px' }}

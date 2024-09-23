@@ -20,7 +20,7 @@ import {
   InputLeftElement,
   Stack,
   Textarea,
-  Heading, useToast,
+  Heading, useToast, Divider,
 } from '@chakra-ui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,9 +31,10 @@ import { faCalendarDays } from '@fortawesome/free-solid-svg-icons';
 import { faAddressBook } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faStarHalfStroke } from '@fortawesome/free-solid-svg-icons';
-import { Simulate } from 'react-dom/test-utils';
-import reset = Simulate.reset;
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import Logger from '../Logger';
 
 const schema = yup.object().shape({
   title: yup.string(),
@@ -71,7 +72,7 @@ type FormData = yup.InferType<typeof schema>;
 
 export const AddJobs: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
-
+  const user = useSelector((state: RootState) => state.auth.user);
   const toast = useToast();
 
   useEffect(() => {
@@ -95,9 +96,33 @@ export const AddJobs: React.FC = () => {
     resolver: yupResolver(schema),
   });
 
+ const id = user?.id;
   const onSubmit:  SubmitHandler<FormData> = async (data) => {
+    const newData = {
+      user_id:id,
+      ...data
+    }
+    // try {
+    //   // Make a GET request to the server to get the Google authorization URL
+    //   const response = await axios.get('http://localhost:3002/api/auth/google');
+    //
+    //   // Extract the URL from the response data
+    //   const { url } = response.data;
+    //   console.log("URL",url);
+    //   Logger.info(`URL:${url}`);
+    //
+    //   // Redirect the user to Google's authorization page
+    //   window.location.href = url;
+    // } catch (error) {
+    //   // Check if the error is an Axios error and handle accordingly
+    //   if (axios.isAxiosError(error)) {
+    //     console.error('Error generating authorization URL:', error.response?.data || error.message);
+    //   } else {
+    //     console.error('Unexpected error:', error);
+    //   }
+    // }
     try{
-      const response = await  axios.post('http://localhost:3002/api/add-job', data, {
+      const response = await  axios.post('http://localhost:3002/api/add-job', newData, {
         withCredentials:true
       });
       if (response.status === 201) {
@@ -158,8 +183,8 @@ export const AddJobs: React.FC = () => {
               }}
             >
               <Heading
-                as="h2"
                 pt={'4'}
+                fontSize={"x-large"}
                 display={'flex'}
                 justifyContent={'center'}
                 alignItems={'center'}
@@ -442,7 +467,7 @@ export const AddJobs: React.FC = () => {
                   }}
                 >
                   <Stack spacing={4}>
-                    <Heading as="h2">Property Details Section</Heading>
+                    <Heading fontSize={"x-large"}>Property Details Section</Heading>
                     <FormControl isInvalid={!!errors.heatingType}>
                       <FormLabel htmlFor="heatingType">Heating Type</FormLabel>
                       <Select
@@ -483,19 +508,19 @@ export const AddJobs: React.FC = () => {
                       <FormLabel htmlFor="epcRating">
                         Current EPC Rating
                       </FormLabel>
-                      <InputGroup>
-                        <InputLeftElement pointerEvents={'none'}>
-                          <FontAwesomeIcon
-                            icon={faStarHalfStroke}
-                            color="#CBD5E0"
-                          />
-                        </InputLeftElement>
-                        <Input
-                          id="epcRating"
-                          placeholder="Enter current EPC rating"
-                          {...register('epcRating')}
-                        />
-                      </InputGroup>
+                      <Select
+                        id="epcRating"
+                        placeholder="Select Rating "
+                        {...register('epcRating')}
+                      >
+                        <option value="a">A</option>
+                        <option value="b">B</option>
+                        <option value="c">C</option>
+                        <option value="d">D</option>
+                        <option value="e">E</option>
+                        <option value="f">F</option>
+                        <option value="g">G</option>
+                      </Select>
                       <FormErrorMessage>
                         {errors.epcRating?.message}
                       </FormErrorMessage>
@@ -512,7 +537,7 @@ export const AddJobs: React.FC = () => {
                   }}
                 >
                   <Stack spacing={4}>
-                    <Heading as="h2">Measures Details</Heading>
+                    <Heading fontSize={'x-large'}>Measures Details</Heading>
                     <FormControl isInvalid={!!errors.serviceType}>
                       <FormLabel htmlFor="serviceType">Service Type</FormLabel>
                       <Select
@@ -527,8 +552,7 @@ export const AddJobs: React.FC = () => {
                         <option value='Solar'>Solar PV</option>
                         <option value='Solar'>Internal</option>
                         <option value='Solar'>External</option>
-                        <option value='Solar'>Air Source Eat</option>
-                        <option value='Solar'>Pump Insulation</option>
+                        <option value='Solar'>Air Source Heating Pump</option>
                       </Select>
                       <FormErrorMessage>
                       {errors.serviceType?.message}

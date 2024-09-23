@@ -14,8 +14,6 @@ import {
   Tr, useColorModeValue,
 } from '@chakra-ui/react';
 import { AiOutlineSelect } from 'react-icons/ai';
-import { Simulate } from 'react-dom/test-utils';
-import error = Simulate.error;
 import { ViewEmployeeJob } from './ViewEmployeeJob';
 import { SearchIcon } from '@chakra-ui/icons';
 import { EditEmployeeJob } from './EditEmployeeJob';

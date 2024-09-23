@@ -47,23 +47,13 @@ interface Job {
   heatingType: string;
   propertyType: string | null;
   epcRating: string;
+  status: string;
   serviceType: string;
   assessmentDate: string;
   notes: string;
   user_id: number;
   month: string;
   year: string;
-}
-interface User {
-  id: number;
-  username: string;
-  password: string;
-  role: string;
-  email: string;
-  jobs: Job[];
-}
-interface UserWithJobs {
-  userWithJobs: User[];
 }
 
 export const EmployeeHeader: React.FC = ({}) => {
@@ -89,66 +79,59 @@ export const EmployeeHeader: React.FC = ({}) => {
   const userEmail = user?.email
   const fetchDataAndExportToExcel = async () => {
     try {
-      const response = await axios.get('http://localhost:3002/api/getIndividualEmployeeWithJobInfo',{
+      const response = await axios.get('http://localhost:3002/api/getEmployeeJobs',{
         params:{
           id
         }
       });
-      exportToExcel(response.data);
+        exportToExcel(response.data);
     } catch (error) {
       console.error('Error fetching data or exporting to Excel:', error);
     }
   };
-  const exportToExcel = (data:UserWithJobs) => {
-    console.log("exportToExcel",data);
-    const flattenedData = data.userWithJobs.flatMap(user =>
-      user.jobs.map(job => ({
-        userId: user.id,
-        username: user.username,
-        password: user.password,
-        role: user.role,
-        userEmail: user.email, // Use a different name to avoid conflict
-        jobId: job.id,
-        jobTitle: job.title,
-        firstName: job.firstName,
-        lastName: job.lastName,
-        dateOfBirth: job.dateOfBirth,
-        jobEmail: job.email, // Job-specific email
-        contactNumber: job.contactNumber,
-        address: job.address,
-        postcode: job.postcode,
-        landlordName: job.landlordName,
-        landlordContactNumber: job.landlordContactNumber,
-        landlordEmail: job.landlordEmail,
-        agentName: job.agentName,
-        agentContactNumber: job.agentContactNumber,
-        agentEmail: job.agentEmail,
-        heatingType: job.heatingType,
-        propertyType: job.propertyType,
-        epcRating: job.epcRating,
-        serviceType: job.serviceType,
-        assessmentDate: job.assessmentDate,
-        notes: job.notes,
-        month: job.month,
-        year: job.year,
-      }))
-    );
 
+  const replaceEmptyFields = (value: any, placeholder = 'N/A') => {
+    return value === undefined || value === null || value === '' ? placeholder : value;
+  };
+  const exportToExcel = (data: Job[]) => {
+    // Map over the data to replace empty fields with placeholders
+    const flattenedData = data.map((job) => ({
+      jobId: replaceEmptyFields(job.id),
+      jobTitle: replaceEmptyFields(job.title),
+      firstName: replaceEmptyFields(job.firstName),
+      lastName: replaceEmptyFields(job.lastName),
+      dateOfBirth: replaceEmptyFields(job.dateOfBirth),
+      jobEmail: replaceEmptyFields(job.email),
+      contactNumber: replaceEmptyFields(job.contactNumber),
+      address: replaceEmptyFields(job.address),
+      postcode: replaceEmptyFields(job.postcode),
+      landlordName: replaceEmptyFields(job.landlordName),
+      landlordContactNumber: replaceEmptyFields(job.landlordContactNumber),
+      landlordEmail: replaceEmptyFields(job.landlordEmail),
+      agentName: replaceEmptyFields(job.agentName),
+      agentContactNumber: replaceEmptyFields(job.agentContactNumber),
+      agentEmail: replaceEmptyFields(job.agentEmail),
+      heatingType: replaceEmptyFields(job.heatingType),
+      propertyType: replaceEmptyFields(job.propertyType),
+      epcRating: replaceEmptyFields(job.epcRating),
+      serviceType: replaceEmptyFields(job.serviceType),
+      assessmentDate: replaceEmptyFields(job.assessmentDate),
+      status: replaceEmptyFields(job.status),
+      notes: replaceEmptyFields(job.notes),
+      month: replaceEmptyFields(job.month),
+      year: replaceEmptyFields(job.year),
+    }));
+    // Check if flattenedData is empty and add placeholder data if so
+    const dataToExport = flattenedData.length > 0 ? flattenedData : [{ jobId: '', jobTitle: '', firstName: '' }];
+console.log("DataToExport",dataToExport);
     // Create a worksheet and a workbook
-    const worksheet = XLSX.utils.json_to_sheet(
-      flattenedData.length > 0 ? flattenedData : [{ id: '', name: '', email: '' }]
-    );
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
 
     // Generate Excel buffer and create a Blob
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: 'xlsx',
-      type: 'array',
-    });
-    const dataBlob = new Blob([excelBuffer], {
-      type: 'application/octet-stream',
-    });
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const dataBlob = new Blob([excelBuffer], { type: 'application/octet-stream' });
 
     // Save the Excel file
     saveAs(dataBlob, 'DataExport.xlsx');

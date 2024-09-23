@@ -17,6 +17,7 @@ import { EmployeeDashboard } from './Employee/EmployeeDashboard';
 import { useSelector } from 'react-redux';
 import React from 'react';
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import Callback from './Auth/Callback';
 
 interface PrivateRoutePage {
   component: React.FC;
@@ -74,6 +75,8 @@ const App: React.FC = () => {
           {/*  path="/employee/*"*/}
           {/*  element={<EmployeeDashboard sidebarVariant={'opaque'} />}*/}
           {/*/>*/}
+
+          <Route path={"/auth/callback"} element={<Callback/>}/>
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/recover-password" element={<RecoverPassword />} />
           <Route path={'/404page'} element={<NotFound />} />
