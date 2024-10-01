@@ -434,6 +434,18 @@ export const PersonIcon = createIcon({
   ),
 });
 
+export const LogoutIcon = createIcon({
+  displayName: 'LogoutIcon',
+  viewBox: '0 0 24 24',
+  path: (
+    <path
+      fill="currentColor"
+      d="M16 13v-2H7V7l-5 5 5 5v-4h9zM13 3h7v18h-7v-2h5V5h-5V3z"
+    />
+  ),
+});
+
+
 export const ProfileIcon = createIcon({
   displayName: 'ProfileIcon',
   viewBox: '0 0 24 24',

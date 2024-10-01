@@ -22,6 +22,7 @@ import { FiExternalLink } from "react-icons/fi";
 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { AdminNavbarLink } from '../../Admin/Component/Dashboard/component/Table/AdminNavbarLink';
 
 interface Job {
   title: string;
@@ -146,7 +147,7 @@ export const Header: React.FC = () => {
           display={'flex'}
           justifyContent="space-between"
         >
-          <EmployeeNavbarLink brandText={getSecondLastPathSegment(window.location.pathname)}
+          <AdminNavbarLink brandText={getSecondLastPathSegment(window.location.pathname)}
                               brandTextS={getLastPathSegment(window.location.pathname)}
                               mainTextColor={mainText}
                               secondaryTextColor={secondaryText}

@@ -20,7 +20,7 @@ const Callback = () => {
       console.error('No authorization code found.');
       navigate('/error'); // Redirect to an error page or handle accordingly
     }
-  }, [location, navigate]);
+  }, []);
 
   const handleAuthorizationCode = async (code: string) => {
     try {

@@ -5,9 +5,11 @@ import {
 import { NavbarLinks } from '../../../../../Components/Navbar/NavbarLinks';
 import React, { useEffect, useState } from 'react';
 import { Statistics } from '../Statistics';
-import { Box, Button, Flex, Heading, HStack, Skeleton, SkeletonText } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, HStack, Skeleton, SkeletonText, useColorModeValue } from '@chakra-ui/react';
 import { Employees } from './Employees';
 import axios from 'axios';
+import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
+import { AdminNavbarLink } from './AdminNavbarLink';
 interface MetaData {
   totalPages: number;
   currentPage: number;
@@ -19,6 +21,10 @@ export const EmployeeTable = () => {
   const [metaData, setMetaData] = useState<MetaData | null>(null);
   const totalPages = metaData?.totalPages ?? 5;
   const currentPage = metaData?.currentPage ?? 1;
+  const navbarIcon = useColorModeValue('gray.500', 'gray.200');
+  const mainText = useColorModeValue('gray.700', 'gray.200');
+  const secondaryText = useColorModeValue('gray.700', 'white');
+  const backGroundColor = useColorModeValue('white', 'white');
   useEffect(() => {
     const fetchEmployeeData = async () => {
       try {
@@ -68,10 +74,12 @@ export const EmployeeTable = () => {
   return (
     <React.Fragment>
       <Box display={'flex'} flexDirection={'column'} width={'100%'}>
-        <NavbarLinks
-          brandText={getSecondLastPathSegment(window.location.pathname)}
-          brandTextS={getLastPathSegment(window.location.pathname)}
-        />
+        <AdminNavbarLink brandText={getSecondLastPathSegment(window.location.pathname)}
+                         brandTextS={getLastPathSegment(window.location.pathname)}
+                         mainTextColor={mainText}
+                         secondaryTextColor={secondaryText}
+                         navbarIconColor={navbarIcon}
+                         backgroundColor={backGroundColor}/>
         <Box>
           <Flex direction="column" pt={{ base: '120px', md: '75px' }}>
             {loading && (
@@ -89,7 +97,7 @@ export const EmployeeTable = () => {
                 <Employees
                   title={'Registered Employees'}
                   data={employeeData}
-                  captions={['Name', 'Email', 'Password','Role', 'Edit', 'Delete']}
+                  captions={['Username', 'Email', 'Password','Role', 'Edit', 'Delete','DropBox']}
                 />
               )
             ) : (
@@ -101,6 +109,7 @@ export const EmployeeTable = () => {
               <Button
                 onClick={() => handleButtonClicked(currentPage-1)}
                 isDisabled={currentPage === 1}
+                leftIcon={<ArrowBackIcon />}
               >
                 Previous
               </Button>
@@ -116,6 +125,7 @@ export const EmployeeTable = () => {
               <Button
                 onClick={() => handleButtonClicked(currentPage +1 )}
                 isDisabled={currentPage === totalPages}
+                rightIcon={<ArrowForwardIcon />}
               >
                 Next
               </Button>

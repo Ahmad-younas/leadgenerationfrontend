@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card } from '../../../../../Components/Card/Card';
 import CardHeader from '../../../../../Components/Card/CardHeader';
 import {
-  Box, Button,
+  Box, Button, Checkbox,
   IconButton,
   Input,
   InputGroup,
@@ -12,12 +12,14 @@ import {
   Th,
   Thead,
   Tr,
-  useColorModeValue,
+  useColorModeValue, useToast,
 } from '@chakra-ui/react';
 import { Text } from '@chakra-ui/react';
 import { CardBody } from '../../../../../Components/Card/Cardbody';
 import { TableDataRow } from './TableDataRow';
 import { DeleteIcon, SearchIcon } from '@chakra-ui/icons';
+import { AiOutlineCheckCircle } from 'react-icons/ai';
+import axios from 'axios';
 
 interface DataRow {
   email: string;
@@ -25,6 +27,7 @@ interface DataRow {
   password: string;
   role:string
   id:string
+  link:string
 }
 interface cardTableProps {
   title: string;
@@ -43,16 +46,69 @@ export const Employees: React.FC<cardTableProps> = ({
   let navbarIcon = useColorModeValue('gray.500', 'gray.200');
   let searchIcon = useColorModeValue('gray.700', 'gray.200');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedEmployees, setSelectedEmployees] = useState<string[]>([]);
+  const [employees, setEmployees] = useState(data);
+  const toast = useToast();
 
-  const filteredData = data.filter((row) =>
+  const filteredData = employees.filter((row) =>
     row.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
     row.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     row.password.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  console.log('Updated Employees:', employees);
+  useEffect(() => {
+    console.log('Updated Employees:', employees); // Debugging line
+  }, [employees]);
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedEmployees(filteredData.map((employee) => employee.id));
+    } else {
+      setSelectedEmployees([]);
+    }
+    console.log("selectAll",selectedEmployees);
+  };
+
+
+  const handleSelectEmployee = (id: string) => {
+    setSelectedEmployees((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((employeeId) => employeeId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    try {
+      const response = await axios.post('http://localhost:3002/api/deleteSelectedEmployees', {
+        employeeIds: selectedEmployees, // Pass the selected employee IDs to the backend
+      });
+      if(response.status === 200){
+        toast({
+          title: 'Employee Status.',
+          description: ' Employee Successfully Added.',
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+          position: 'top-right',
+        });
+      }
+      setEmployees((prevEmployees) =>
+        prevEmployees.filter((employee) => !selectedEmployees.includes(employee.id))
+      );
+      setSelectedEmployees([]);
+      console.log('Employees deleted successfully:', response.data);
+      setSelectedEmployees([]);
+    } catch (error) {
+      console.error('Error deleting selected employees:', error);
+    }
+  };
+
+
   return (
     <React.Fragment>
       <Card
-        overflowX={{ sm: 'scroll', xl: 'hidden' }}
+        overflowX={{ sm: 'scroll', xl: 'auto' }}
         bg={'white'}
         padding={'22px'}
         borderRadius={'15px'}
@@ -67,10 +123,19 @@ export const Employees: React.FC<cardTableProps> = ({
             {title}
           </Text>
           <Box display={'flex'} justifyContent={'end'} >
-
             <Button
               leftIcon={<DeleteIcon />}
-              colorScheme="teal"
+              colorScheme="red"
+              variant="solid"
+              onClick={handleDeleteSelected}
+              isDisabled={selectedEmployees.length === 0}
+              marginX="10px"
+            >
+              Delete Selected
+            </Button>
+            <Button
+              leftIcon={<DeleteIcon />}
+              colorScheme="red"
               variant="solid"
             >
               Delete All Employees
@@ -131,12 +196,21 @@ export const Employees: React.FC<cardTableProps> = ({
           <Table variant="simple" color={textColor}>
             <Thead>
               <Tr my=".8rem" pl="0px" color="gray.400">
+                <Th>
+                  <Checkbox
+                    isChecked={
+                      selectedEmployees.length === filteredData.length &&
+                      filteredData.length > 0
+                    }
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    icon={<AiOutlineCheckCircle />}
+                  />
+                </Th>
                 {captions.map((caption, idx) => {
                   return (
                     <Th
                       color="gray.400"
                       key={idx}
-                      ps={idx === 0 ? '0px' : undefined}
                     >
                       {caption}
                     </Th>
@@ -147,14 +221,22 @@ export const Employees: React.FC<cardTableProps> = ({
             <Tbody>
               {filteredData.map((row) => {
                 return (
-                  <TableDataRow
-                    name={row.username}
-                    email={row.email}
-                    password={row.password}
-                    role={row.role}
-                    id={row.id}
-
-                  />
+                  <Tr key={row.id}>
+                    <Th>
+                      <Checkbox
+                        isChecked={selectedEmployees.includes(row.id)}
+                        onChange={() => handleSelectEmployee(row.id)}
+                      />
+                    </Th>
+                    <TableDataRow
+                      name={row.username}
+                      email={row.email}
+                      password={row.password}
+                      role={row.role}
+                      id={row.id}
+                      link={row.link}
+                    />
+                  </Tr>
                 );
               })}
             </Tbody>

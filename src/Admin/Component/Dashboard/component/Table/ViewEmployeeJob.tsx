@@ -48,6 +48,7 @@ interface FormData {
   notes: string;
   month: string;
   year: string;
+  status:string;
 }
 
 interface AuthModalProps {
@@ -72,49 +73,21 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
     >
       <ModalOverlay />
       <ModalContent maxWidth={"70%"}>
-        <ModalHeader  fontWeight={'bold'}>Employee Personal Information</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
           <Box display='flex' justifyContent='center'>
             <form>
-              <FormControl>
-                <FormLabel>Name</FormLabel>
-                <Input
-                  placeholder='Enter Name'
-                  defaultValue={data.username}
-                  isReadOnly={true}
-
-                />
-              </FormControl>
-
-
-              <FormControl mt={4}>
-                <FormLabel>Email</FormLabel>
-                <Input
-                  defaultValue={data.userEmail}
-                  placeholder='Email'
-                  isReadOnly={true}
-                />
-              </FormControl>
-              <FormControl mt={4}>
-                <FormLabel htmlFor='heatingType'>Employee Role</FormLabel>
-                <Input
-                  defaultValue={data.role}
-                  placeholder='Role'
-                  isReadOnly={true}
-                />
-              </FormControl>
               <Box
                 style={{
                   backgroundColor: 'white',
                 }}
               >
                 <Heading
-                  as="h6"
                   pt={'4'}
+                  fontSize={"x-large"}
                   display={'flex'}
-                  justifyContent={'left'}
-                  alignItems={'left'}
+                  justifyContent={'center'}
+                  alignItems={'center'}
                 >
                   Tenant Details
                 </Heading>
@@ -317,7 +290,7 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
                     }}
                   >
                     <Stack spacing={4}>
-                      <Heading as="h2">Property Details Section</Heading>
+                      <Heading >Property Details Section</Heading>
                       <FormControl >
                         <FormLabel htmlFor="heatingType">Heating Type</FormLabel>
                         <Input
@@ -366,7 +339,47 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
                     }}
                   >
                     <Stack spacing={4}>
-                      <Heading as="h2">Measures Details</Heading>
+                      <Heading >Measures Details</Heading>
+                      <FormControl >
+                        <FormLabel htmlFor="serviceType">Service Type</FormLabel>
+                        <Input
+                          defaultValue={data.serviceType}
+                          isReadOnly={true}
+                        />
+                      </FormControl>
+
+                      <FormControl >
+                        <FormLabel htmlFor="assessmentBirth">
+                          Retrofit Assessment Date
+                        </FormLabel>
+                        <InputGroup>
+                          <InputLeftElement pointerEvents={'none'}>
+                            <FontAwesomeIcon
+                              icon={faCalendarDays}
+                              color="#CBD5E0"
+                            />
+                          </InputLeftElement>
+                          <Input
+                            defaultValue={data.assessmentDate}
+                            isReadOnly={true}
+                          />
+                        </InputGroup>
+                      </FormControl>
+
+                      <FormControl >
+                        <FormLabel htmlFor="note">Note</FormLabel>
+                        <Textarea
+                          id="note"
+                          defaultValue={data.notes}
+                          isReadOnly={true}
+                        />
+                      </FormControl>
+                      <ModalFooter>
+                        <Button onClick={onCloseModel}>Close</Button>
+                      </ModalFooter>
+                    </Stack>
+                    <Stack spacing={4}>
+                      <Heading >Measures Details</Heading>
                       <FormControl >
                         <FormLabel htmlFor="serviceType">Service Type</FormLabel>
                         <Input

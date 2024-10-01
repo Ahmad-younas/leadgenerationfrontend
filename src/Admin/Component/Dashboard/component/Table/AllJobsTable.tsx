@@ -8,15 +8,16 @@ import {
   Table,
   TableContainer,
   Tbody,
-  Td,
+  Td, Text,
   Th,
   Thead,
-  Tr, useColorModeValue,
+  Tr, useColorModeValue, useToast,
 } from '@chakra-ui/react';
-import { AiOutlineSelect } from 'react-icons/ai';
+import { AiOutlineCheckCircle, AiOutlineSelect } from 'react-icons/ai';
 import { ViewEmployeeJob } from './ViewEmployeeJob';
-import { SearchIcon } from '@chakra-ui/icons';
+import { ArrowBackIcon, ArrowForwardIcon, SearchIcon } from '@chakra-ui/icons';
 import { EditEmployeeJob } from './EditEmployeeJob';
+import { Jobs } from '../../../../../Employee/Jobs';
 interface Jobs {
   title:string,
   firstName: string;
@@ -38,15 +39,20 @@ export const AllJobsTable = () => {
   let inputBg = useColorModeValue('white', 'gray.800');
   let mainText = useColorModeValue('gray.700', 'gray.200');
   let searchIcon = useColorModeValue('gray.700', 'gray.200');
+  let paginationButtonColor = useColorModeValue('teal.300','teal.300');
 
-  const [isOpenModel, setIsOpenModel] = useState<boolean>(false);
+  const [isOpenViewEmployeeModel, setIsOpenViewEmployeeModel] = useState<boolean>(false);
+  const [isOpenEditEmployeeModel, setIsOpenEditEmployeeModel] = useState<boolean>(false);
   const [jobs, setJobs] = useState<Jobs[]>([]);
-  const onCloseModel = () => setIsOpenModel(false);
+  const [selectedJobs, setSelectedJobs] = useState<number[]>([]);
+  const onCloseViewModel = () => setIsOpenViewEmployeeModel(false);
+  const onCloseEditModel = () => setIsOpenEditEmployeeModel(false);
   const [metaData, setMetaData] = useState<MetaData | null>(null);
   const totalPages = metaData?.totalPages ?? 5;
   const currentPage = metaData?.currentPage ?? 1;
+  const toast = useToast();
   const [editData, setEditData] = useState({
-
+    id:"",
     title: "",
     firstName: "",
     lastName: "",
@@ -71,7 +77,8 @@ export const AllJobsTable = () => {
     year: "",
     username:"",
     role:"",
-    userEmail:""
+    userEmail:"",
+    status:""
   });
 
   useEffect(() => {
@@ -85,15 +92,159 @@ export const AllJobsTable = () => {
     // Perform the GET request to fetch all jobs
   }, []);
 
+  const handleSelectAll = () => {
+    if (selectedJobs.length === jobs.length) {
+      console.log("HandleSelectAll",selectedJobs);
+      setSelectedJobs([]); // Deselect all
+    } else {
+      console.log("HandleSelectAll",selectedJobs);
+      setSelectedJobs(jobs.map(job => job.id)); // Select all
+    }
+    console.log("HandleSelectAll",selectedJobs);
+  };
+  const handleCheckboxChange = (jobId: number) => {
+    setSelectedJobs(prevSelectedJobs =>
+      prevSelectedJobs.includes(jobId)
+        ? prevSelectedJobs.filter(id => id !== jobId)
+        : [...prevSelectedJobs, jobId]
+    );
+  };
 
-  const fetchEmployeeInfo = (id:number ,user_id:number) => {
+  const handleDeleteSelected = () => {
+
+    if (selectedJobs.length === 0) {
+      toast({
+        title: 'No Jobs Selected',
+        position:'top-right',
+        description: 'Please select at least one job to delete.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    axios.post('http://localhost:3002/api/deleteSelectedJobs', { jobIds: selectedJobs })
+      .then(response => {
+        if (response.status === 200) {
+          toast({
+            title: 'Jobs Status',
+            position:'top-right',
+            description: response.data.message,
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+        }
+        setJobs(jobs.filter(job => !selectedJobs.includes(job.id))); // Update the jobs state after deletion
+        setSelectedJobs([]); // Clear selected jobs
+      })
+      .catch(error => {
+        console.log('Error deleting jobs:', error);
+      });
+  };
+
+  const token = localStorage.getItem('authToken');
+  const handleDeleteAllJob = async () =>{
+    if (jobs.length === 0) {
+      toast({
+        title: 'No Jobs Found',
+        position:'top-right',
+        description: 'Please enter the job first.',
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    try {
+      const response = await axios.post('http://localhost:3002/api/deleteAllJobs', { jobIds: jobs },{
+        withCredentials:true,
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+      });
+
+      // Save the response in a variable
+      const responseData = response.data;
+
+      if (response.status === 200) {
+        toast({
+          title: 'Jobs Status',
+          position: 'top-right',
+          description: responseData.message,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+        setJobs([]);
+        setSelectedJobs([]); // Clear selected jobs
+      }
+    } catch (error) {
+      console.log('Error deleting jobs:', error);
+      toast({
+        title: 'Error',
+        position: 'top-right',
+        description: 'Failed to delete jobs.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  }
+
+  const fetchEmployeeInfoForView = (id:number ,user_id:number) => {
     axios.post('http://localhost:3002/api/get-Employee-Info-And-Employee-Job-Info', {
       employeeJobId: id, // Replace with actual employeeJobId
       employeeId: user_id,     // Replace with actual employeeId
     }).then(response => {
-      console.log('response', response);
+      console.log('fetchEmployeeInfoForView');
       const { employeeInfo, employeeJobInfo } = response.data;
       setEditData({
+        id:employeeJobInfo.id || "N/A",
+        title: employeeJobInfo.title || "N/A",
+        firstName: employeeJobInfo.firstName || "N/A",
+        lastName: employeeJobInfo.lastName || "N/A",
+        dateOfBirth: employeeJobInfo.dateOfBirth || "N/A",
+        email: employeeJobInfo.email || "N/A",
+        contactNumber: employeeJobInfo.contactNumber || "N/A",
+        address: employeeJobInfo.address || "N/A",
+        postcode: employeeJobInfo.postcode || "N/A",
+        landlordName: employeeJobInfo.landlordName || "N/A",
+        landlordContactNumber: employeeJobInfo.landlordContactNumber || "N/A",
+        landlordEmail: employeeJobInfo.landlordEmail || "N/A",
+        agentName: employeeJobInfo.agentName || "N/A",
+        agentContactNumber: employeeJobInfo.agentContactNumber || "N/A",
+        agentEmail: employeeJobInfo.agentEmail || "N/A",
+        heatingType: employeeJobInfo.heatingType || "N/A",
+        propertyType: employeeJobInfo.propertyType || "N/A",
+        epcRating: employeeJobInfo.epcRating || "N/A",
+        serviceType: employeeJobInfo.serviceType || "N/A",
+        assessmentDate: employeeJobInfo.assessmentDate || "N/A",
+        notes: employeeJobInfo.notes || "N/A",
+        month: employeeJobInfo.month || "N/A",
+        year: employeeJobInfo.year || "N/A",
+        username: employeeInfo.username || "N/A",
+        role: employeeInfo.role || "N/A",
+        userEmail: employeeInfo.email || "N/A",
+        status: employeeInfo.status || "N/A"
+      });
+
+      setIsOpenViewEmployeeModel(true);
+    }).catch(error => {
+      console.log('error', error);
+    });
+  };
+
+
+  const fetchEmployeeInfoForEdit = (id:number ,user_id:number) => {
+    axios.post('http://localhost:3002/api/get-Employee-Info-And-Employee-Job-Info', {
+      employeeJobId: id, // Replace with actual employeeJobId
+      employeeId: user_id,     // Replace with actual employeeId
+    }).then(response => {
+      console.log('fetchEmployeeInfoForEdit',response.data);
+      const { employeeInfo, employeeJobInfo } = response.data;
+      setEditData({
+        id:employeeJobInfo.id || "",
         title: employeeJobInfo.title || "",
         firstName: employeeJobInfo.firstName || "",
         lastName: employeeJobInfo.lastName || "",
@@ -118,10 +269,11 @@ export const AllJobsTable = () => {
         year: employeeJobInfo.year || "",
         username: employeeInfo.username || "",
         role: employeeInfo.role || "",
-        userEmail: employeeInfo.email || ""
+        userEmail: employeeInfo.email || "",
+        status: employeeInfo.status || ""
       });
 
-      setIsOpenModel(true);
+      setIsOpenEditEmployeeModel(true);
     }).catch(error => {
       console.log('error', error);
     });
@@ -143,7 +295,6 @@ export const AllJobsTable = () => {
           }
         }
       );
-      console.log('response:', response.data);
       setJobs(response.data.jobs);
       setMetaData(response.data.meta);
 
@@ -170,150 +321,165 @@ export const AllJobsTable = () => {
 
   return (
     <React.Fragment>
-      <ViewEmployeeJob isOpenModel={isOpenModel} onCloseModel={onCloseModel} data={editData}/>
-      <EditEmployeeJob isOpenModel={isOpenModel} onCloseModel={onCloseModel} data={editData}/>
-      <Box bg="white">
-        <TableContainer p={'30px'}>
+      <ViewEmployeeJob isOpenModel={isOpenViewEmployeeModel} onCloseModel={onCloseViewModel} data={editData}/>
+      <EditEmployeeJob isOpenModel={isOpenEditEmployeeModel} onCloseModel={onCloseEditModel} data={editData}/>
 
-          <Box display={'flex'} justifyContent={'end'} pb={'10px'}>
-            <InputGroup
-              cursor="pointer"
-              bg={inputBg}
-              borderRadius="10px"
-              mx={'10'}
-              w={{
-                sm: '128px',
-                md: '200px',
-              }}
-              me={{ sm: 'auto', md: '20px' }}
-              _focus={{
-                borderColor: { mainTeal },
-              }}
-              _active={{
-                borderColor: { mainTeal },
-              }}
-            >
-              <InputLeftElement
-                children={
-                  <IconButton
-                    bg="inherit"
-                    borderRadius="inherit"
-                    _hover={{
-                      cursor: 'pointer',
-                    }}
-                    _active={{
-                      bg: 'inherit',
-                      transform: 'none',
-                      borderColor: 'transparent',
-                    }}
-                    _focus={{
-                      boxShadow: 'none',
-                    }}
-                    icon={<SearchIcon color={searchIcon} w="15px" h="15px" />}
-                    aria-label={'Search Employee'}
-                  >
-                  </IconButton>
-                }
-              />
-              <Input
-                fontSize="xs"
-                py="11px"
-                color={mainText}
-                placeholder="Type here..."
-                borderRadius="inherit"
-                value={searchQuery}
-                onChange={(e)=> setSearchQuery(e.target.value)}
-              />
-            </InputGroup>
-          </Box>
-          <Table size="sm">
-            <Thead>
-              <Tr>
-                <Th>
-                  <AiOutlineSelect
-                    size={'17px'}
-                    cursor={'pointer'}
-                    onClick={() => {
-                      console.log('clicked');
-                    }}
-                  />{' '}
-                </Th>
-                <Th>Title</Th>
-                <Th>FirstName</Th>
-                <Th>LastName</Th>
-                <Th>Email</Th>
-                <Th>Phone Number</Th>
-                <Th>Address</Th>
-                <Th>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {filteredData && filteredData.length > 0 ? (
-                filteredData.map((item, index) => (
-                  <Tr key={index}>
-                    <Td>
-                      <Checkbox />
-                    </Td>
-                    <Td>{item.title}</Td>
-                    <Td>{item.firstName}</Td>
-                    <Td>{item.lastName}</Td>
-                    <Td>{item.email}</Td>
-                    <Td>{item.contactNumber}</Td>
-                    <Td>{item.address}</Td>
-                    <Td>
-                      <IconButton
-                        aria-label={'view'}
-                        icon={<GrView/>}
-                        color="teal"
-                        onClick={()=>fetchEmployeeInfo(item.id,item.user_id)}
-                        marginX={'5px'}
-                      />
-                      <IconButton
-                        aria-label={'edit'}
-                        icon={<GrEdit/>}
-                        color="teal"
-                        onClick={()=>fetchEmployeeInfo(item.id,item.user_id)}
+      {
+        jobs?(<Box bg="white">
+          <TableContainer p={'30px'}>
 
-                      />
+            <Box display={'flex'} justifyContent={'end'} pb={'10px'}>
+              <Button  onClick={handleDeleteSelected} isDisabled={jobs.length === 0} colorScheme="red" w={{
+                sm: '100px',
+                md: '170px',
+              }}> Delete Selected Jobs
+              </Button>
+              <Button onClick={handleDeleteAllJob} isDisabled={jobs.length === 0}  colorScheme={"red"} marginX={"20px"} w={{
+                sm: '100px',
+                md: '150px',
+              }}>Delete All Job</Button>
+              <InputGroup
+                cursor="pointer"
+                bg={inputBg}
+                borderRadius="10px"
+                mx={'10'}
+                w={{
+                  sm: '128px',
+                  md: '200px',
+                }}
+                me={{ sm: 'auto', md: '20px' }}
+                _focus={{
+                  borderColor: { mainTeal },
+                }}
+                _active={{
+                  borderColor: { mainTeal },
+                }}
+              >
+                <InputLeftElement
+                  children={
+                    <IconButton
+                      bg="inherit"
+                      borderRadius="inherit"
+                      _hover={{
+                        cursor: 'pointer',
+                      }}
+                      _active={{
+                        bg: 'inherit',
+                        transform: 'none',
+                        borderColor: 'transparent',
+                      }}
+                      _focus={{
+                        boxShadow: 'none',
+                      }}
+                      icon={<SearchIcon color={searchIcon} w="15px" h="15px" />}
+                      aria-label={'Search Employee'}
+                    >
+                    </IconButton>
+                  }
+                />
+                <Input
+                  fontSize="xs"
+                  py="11px"
+                  color={mainText}
+                  placeholder="Type here..."
+                  borderRadius="inherit"
+                  value={searchQuery}
+                  onChange={(e)=> setSearchQuery(e.target.value)}
+                />
+              </InputGroup>
+            </Box>
+            <Table size="sm">
+              <Thead>
+                <Tr>
+                  <Th>
+                    <Checkbox
+                      isChecked={selectedJobs.length === jobs.length}
+                      onChange={handleSelectAll}
+                      icon={<AiOutlineCheckCircle />} // Adding the custom icon
+                    />
+                  </Th>
+                  <Th>Title</Th>
+                  <Th>FirstName</Th>
+                  <Th>LastName</Th>
+                  <Th>Email</Th>
+                  <Th>Phone Number</Th>
+                  <Th>Address</Th>
+                  <Th>Action</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {filteredData && filteredData.length > 0 ? (
+                  filteredData.map((item, index) => (
+                    <Tr key={index}>
+                      <Td>
+                        <Checkbox
+                          isChecked={selectedJobs.includes(item.id)}
+                          onChange={() => handleCheckboxChange(item.id)}
+                        />
+                      </Td>
+                      <Td>{item.title}</Td>
+                      <Td>{item.firstName}</Td>
+                      <Td>{item.lastName}</Td>
+                      <Td>{item.email}</Td>
+                      <Td>{item.contactNumber}</Td>
+                      <Td>{item.address}</Td>
+                      <Td>
+                        <IconButton
+                          aria-label={'view'}
+                          icon={<GrView/>}
+                          color="teal"
+                          onClick={()=>fetchEmployeeInfoForView(item.id,item.user_id)}
+                          marginX={'5px'}
+                        />
+                        <IconButton
+                          aria-label={'edit'}
+                          icon={<GrEdit/>}
+                          color="teal"
+                          onClick={()=>fetchEmployeeInfoForEdit(item.id,item.user_id)}
+
+                        />
+                      </Td>
+                    </Tr>
+                  ))
+                ) : (
+                  <Tr>
+                    <Td textAlign="center">
+                      No Job is created
                     </Td>
                   </Tr>
-                ))
-              ) : (
-                <Tr>
-                  <Td textAlign="center">
-                    No Job is created
-                  </Td>
-                </Tr>
-              )}
-            </Tbody>
-          </Table>
-          <Flex justify={'end'} mt={5} mb={5}>
-            <HStack spacing={2}>
-              <Button
-                onClick={() => handleButtonClicked(currentPage-1)}
-                isDisabled={currentPage === 1}
-              >
-                Previous
-              </Button>
-              {pageNumbers.map((number) => (
+                )}
+              </Tbody>
+            </Table>
+            <Flex justify={'end'} mt={5} mb={5}>
+              <HStack spacing={2}>
                 <Button
-                  key={number}
-                  onClick={()=>handleButtonClicked(number)}
-                  variant={currentPage === number ? 'solid' : 'outline'}
+                  leftIcon={<ArrowBackIcon />}
+                  onClick={() => handleButtonClicked(currentPage-1)}
+                  isDisabled={currentPage === 1}
                 >
-                  {number}
+                  Previous
                 </Button>
-              ))}
-              <Button
-                onClick={() => handleButtonClicked(currentPage +1 )}
-                isDisabled={currentPage === totalPages}
-              >
-                Next
-              </Button>
-            </HStack>
-          </Flex>
-        </TableContainer>
-      </Box>
+                {pageNumbers.map((number) => (
+                  <Button
+                    key={number}
+                    onClick={()=>handleButtonClicked(number)}
+                    variant={currentPage === number ? 'solid' : 'outline'}
+                  >
+                    {number}
+                  </Button>
+                ))}
+                <Button
+                  rightIcon={<ArrowForwardIcon />}
+                  onClick={() => handleButtonClicked(currentPage +1 )}
+                  isDisabled={currentPage === totalPages}
+                >
+                  Next
+                </Button>
+              </HStack>
+            </Flex>
+          </TableContainer>
+        </Box>):null
+      }
     </React.Fragment>
   );
 };

@@ -62,7 +62,7 @@ export const Model: React.FC<AuthModalProps> = ({
     formState: { errors },
     reset,
   } = useForm<FormData>({ resolver: yupResolver(schema) });
-
+  const token = localStorage.getItem('authToken');
   const onSubmit = async (data: FormData) => {
     try{
       const response = await axios.patch(
@@ -73,10 +73,13 @@ export const Model: React.FC<AuthModalProps> = ({
           password: data.password,
           role: data.role,
           id: data.id
-
         },
         {
           withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
+          }
         }
       );
       console.log('response',response);

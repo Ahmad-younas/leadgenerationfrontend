@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { EmailIcon } from '@chakra-ui/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -35,6 +36,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import Logger from '../Logger';
+import { AdminNavbarLink } from '../Admin/Component/Dashboard/component/Table/AdminNavbarLink';
 
 const schema = yup.object().shape({
   title: yup.string(),
@@ -72,9 +74,10 @@ type FormData = yup.InferType<typeof schema>;
 
 export const AddJobs: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [Loading, setLoading] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
   const toast = useToast();
-
+  const navigation = useNavigate();
   useEffect(() => {
     // Simulate loading time
     setTimeout(() => {
@@ -95,7 +98,7 @@ export const AddJobs: React.FC = () => {
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
-
+  const token = localStorage.getItem('authToken');
  const id = user?.id;
   const onSubmit:  SubmitHandler<FormData> = async (data) => {
     const newData = {
@@ -123,7 +126,10 @@ export const AddJobs: React.FC = () => {
     // }
     try{
       const response = await  axios.post('http://localhost:3002/api/add-job', newData, {
-        withCredentials:true
+        withCredentials:true,
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+        },
       });
       if (response.status === 201) {
         toast({
@@ -134,6 +140,10 @@ export const AddJobs: React.FC = () => {
           isClosable: true,
           position: 'top-right',
         });
+        reset();
+      }else if(response.status === 204){
+        setLoading(true);
+        await initiateDropboxAuth();
         reset();
       }
     }catch (error){
@@ -152,10 +162,20 @@ export const AddJobs: React.FC = () => {
     }
 
   };
+  const initiateDropboxAuth = async () => {
+    try {
+      // Fetch the Dropbox authentication URL from the backend using Axios
+      const response = await axios.get('http://localhost:3002/api/dropbox/auth-url');
+      // Redirect the user to the Dropbox authorization page
+      window.location.href = response.data.url; // This triggers the OAuth flow
+    } catch (error) {
+      console.error('Error fetching Dropbox Auth URL:', error);
+    }
+  };
 
   return (
     <React.Fragment>
-      <EmployeeNavbarLink
+      <AdminNavbarLink
         brandText={getSecondLastPathSegment(window.location.pathname)}
         brandTextS={getLastPathSegment(window.location.pathname)}
         mainTextColor={mainText}
@@ -163,6 +183,24 @@ export const AddJobs: React.FC = () => {
         navbarIconColor={navbarIcon}
         backgroundColor={backGroundColor}
       />
+      {Loading ? (
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          backgroundColor="rgba(255, 255, 255, 0.8)" // Adjust opacity and color as needed
+          zIndex="1000" // Ensure it's above other content
+        >
+          <Spinner size="xl" />
+        </Box>
+
+      ):null
+      }
       <Box width="100%" mx="auto" mt={5}>
         {isLoading ? (
           <Box
@@ -175,7 +213,6 @@ export const AddJobs: React.FC = () => {
           </Box>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/*<h1 style={{ textTransform: 'uppercase', fontWeight: 'bold', fontSize: 'large' }}>Tenant Details</h1>*/}
             <Box
               style={{
                 backgroundColor: 'white',
@@ -475,10 +512,10 @@ export const AddJobs: React.FC = () => {
                         placeholder="Select Heating Type"
                         {...register('heatingType')}
                       >
-                        <option value="central">Central Heating</option>
-                        <option value="electric">Electric Heating</option>
-                        <option value="gas">Gas Heating</option>
-                        <option value="other">Other</option>
+                        <option value="Central Heating">Central Heating</option>
+                        <option value="Electric Heating">Electric Heating</option>
+                        <option value="Gas Heating">Gas Heating</option>
+                        <option value="Other">Other</option>
                       </Select>
                       <FormErrorMessage>
                         {errors.heatingType?.message}
@@ -494,10 +531,10 @@ export const AddJobs: React.FC = () => {
                         placeholder="Select Property Type"
                         {...register('propertyType')}
                       >
-                        <option value="house">House</option>
-                        <option value="apartment">Apartment</option>
-                        <option value="bungalow">Bungalow</option>
-                        <option value="other">Other</option>
+                        <option value="House">House</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="Bungalow">Bungalow</option>
+                        <option value="Other">Other</option>
                       </Select>
                       <FormErrorMessage>
                         {errors.propertyType?.message}
@@ -513,13 +550,13 @@ export const AddJobs: React.FC = () => {
                         placeholder="Select Rating "
                         {...register('epcRating')}
                       >
-                        <option value="a">A</option>
-                        <option value="b">B</option>
-                        <option value="c">C</option>
-                        <option value="d">D</option>
-                        <option value="e">E</option>
-                        <option value="f">F</option>
-                        <option value="g">G</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
                       </Select>
                       <FormErrorMessage>
                         {errors.epcRating?.message}
@@ -549,10 +586,10 @@ export const AddJobs: React.FC = () => {
                         <option value='Electric'>
                           Electric Storage Heater
                         </option>
-                        <option value='Solar'>Solar PV</option>
-                        <option value='Solar'>Internal</option>
-                        <option value='Solar'>External</option>
-                        <option value='Solar'>Air Source Heating Pump</option>
+                        <option value='Solar PV'>Solar PV</option>
+                        <option value='Internal'>Internal</option>
+                        <option value='External'>External</option>
+                        <option value='Air Source Heating Pump'>Air Source Heating Pump</option>
                       </Select>
                       <FormErrorMessage>
                       {errors.serviceType?.message}

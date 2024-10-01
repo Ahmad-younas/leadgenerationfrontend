@@ -18,6 +18,8 @@ import { useSelector } from 'react-redux';
 import React from 'react';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import Callback from './Auth/Callback';
+import DropboxIntegration from './Auth/DropboxIntegration';
+import { DropboxCallback } from './Auth/DropboxCallback';
 
 interface PrivateRoutePage {
   component: React.FC;
@@ -76,8 +78,10 @@ const App: React.FC = () => {
           {/*  element={<EmployeeDashboard sidebarVariant={'opaque'} />}*/}
           {/*/>*/}
 
-          <Route path={"/auth/callback"} element={<Callback/>}/>
+          <Route path="/auth/callback" element={<Callback/>}/>
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/dropboxAuth" element={<DropboxIntegration />} />
+          <Route path="/dropbox/callback" element={<DropboxCallback/>} />
           <Route path="/recover-password" element={<RecoverPassword />} />
           <Route path={'/404page'} element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404page" />} />
