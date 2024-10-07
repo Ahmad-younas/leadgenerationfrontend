@@ -7,17 +7,11 @@ import { SideBarProps } from '../interfaces';
 import { AdminTheme } from './AdminTheme';
 
 export const AdminDashboard: React.FC<SideBarProps> = ({ sidebarVariant }) => {
-  const mainPanel = useRef<HTMLDivElement>(null);
-  console.log('mainpanel' + mainPanel);
   const variantChange = '0.2s linear';
-
-  console.log(window.location.pathname);
   const opaqueMargins = '16px 0px 16px 16px';
   const transparentMargins = '0px';
   const sidebarMargins =
     sidebarVariant === 'opaque' ? opaqueMargins : transparentMargins;
-
-  //const iconBoxInside = useColorModeValue("white", "white");
   return (
     <ChakraProvider theme={AdminTheme}>
       <React.Fragment>

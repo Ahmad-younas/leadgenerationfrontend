@@ -3,17 +3,17 @@ import axios from 'axios';
 import { GrEdit, GrView } from 'react-icons/gr';
 import {
   Box, Button,
-  Checkbox, Divider, Flex, HStack,
+  Checkbox, Flex, HStack,
   IconButton, Input, InputGroup, InputLeftElement,
   Table,
   TableContainer,
   Tbody,
-  Td, Text,
+  Td,
   Th,
   Thead,
   Tr, useColorModeValue, useToast,
 } from '@chakra-ui/react';
-import { AiOutlineCheckCircle, AiOutlineSelect } from 'react-icons/ai';
+import { AiOutlineCheckCircle, } from 'react-icons/ai';
 import { ViewEmployeeJob } from './ViewEmployeeJob';
 import { ArrowBackIcon, ArrowForwardIcon, SearchIcon } from '@chakra-ui/icons';
 import { EditEmployeeJob } from './EditEmployeeJob';
@@ -80,27 +80,21 @@ export const AllJobsTable = () => {
     userEmail:"",
     status:""
   });
-
   useEffect(() => {
         axios.get('http://localhost:3002/api/all-jobs').then(response=>{
-          console.log('responseOfAllJobs', response.data);
           setJobs(response.data.jobs);
           setMetaData(response.data.meta);
         }).catch(error=>{
           console.log('error', error);
         });
-    // Perform the GET request to fetch all jobs
   }, []);
 
   const handleSelectAll = () => {
     if (selectedJobs.length === jobs.length) {
-      console.log("HandleSelectAll",selectedJobs);
       setSelectedJobs([]); // Deselect all
     } else {
-      console.log("HandleSelectAll",selectedJobs);
       setSelectedJobs(jobs.map(job => job.id)); // Select all
     }
-    console.log("HandleSelectAll",selectedJobs);
   };
   const handleCheckboxChange = (jobId: number) => {
     setSelectedJobs(prevSelectedJobs =>
@@ -163,8 +157,6 @@ export const AllJobsTable = () => {
           Authorization: `Bearer ${token}`
         },
       });
-
-      // Save the response in a variable
       const responseData = response.data;
 
       if (response.status === 200) {
@@ -194,54 +186,9 @@ export const AllJobsTable = () => {
 
   const fetchEmployeeInfoForView = (id:number ,user_id:number) => {
     axios.post('http://localhost:3002/api/get-Employee-Info-And-Employee-Job-Info', {
-      employeeJobId: id, // Replace with actual employeeJobId
-      employeeId: user_id,     // Replace with actual employeeId
+      employeeJobId: id,
+      employeeId: user_id,
     }).then(response => {
-      console.log('fetchEmployeeInfoForView');
-      const { employeeInfo, employeeJobInfo } = response.data;
-      setEditData({
-        id:employeeJobInfo.id || "N/A",
-        title: employeeJobInfo.title || "N/A",
-        firstName: employeeJobInfo.firstName || "N/A",
-        lastName: employeeJobInfo.lastName || "N/A",
-        dateOfBirth: employeeJobInfo.dateOfBirth || "N/A",
-        email: employeeJobInfo.email || "N/A",
-        contactNumber: employeeJobInfo.contactNumber || "N/A",
-        address: employeeJobInfo.address || "N/A",
-        postcode: employeeJobInfo.postcode || "N/A",
-        landlordName: employeeJobInfo.landlordName || "N/A",
-        landlordContactNumber: employeeJobInfo.landlordContactNumber || "N/A",
-        landlordEmail: employeeJobInfo.landlordEmail || "N/A",
-        agentName: employeeJobInfo.agentName || "N/A",
-        agentContactNumber: employeeJobInfo.agentContactNumber || "N/A",
-        agentEmail: employeeJobInfo.agentEmail || "N/A",
-        heatingType: employeeJobInfo.heatingType || "N/A",
-        propertyType: employeeJobInfo.propertyType || "N/A",
-        epcRating: employeeJobInfo.epcRating || "N/A",
-        serviceType: employeeJobInfo.serviceType || "N/A",
-        assessmentDate: employeeJobInfo.assessmentDate || "N/A",
-        notes: employeeJobInfo.notes || "N/A",
-        month: employeeJobInfo.month || "N/A",
-        year: employeeJobInfo.year || "N/A",
-        username: employeeInfo.username || "N/A",
-        role: employeeInfo.role || "N/A",
-        userEmail: employeeInfo.email || "N/A",
-        status: employeeInfo.status || "N/A"
-      });
-
-      setIsOpenViewEmployeeModel(true);
-    }).catch(error => {
-      console.log('error', error);
-    });
-  };
-
-
-  const fetchEmployeeInfoForEdit = (id:number ,user_id:number) => {
-    axios.post('http://localhost:3002/api/get-Employee-Info-And-Employee-Job-Info', {
-      employeeJobId: id, // Replace with actual employeeJobId
-      employeeId: user_id,     // Replace with actual employeeId
-    }).then(response => {
-      console.log('fetchEmployeeInfoForEdit',response.data);
       const { employeeInfo, employeeJobInfo } = response.data;
       setEditData({
         id:employeeJobInfo.id || "",
@@ -270,9 +217,50 @@ export const AllJobsTable = () => {
         username: employeeInfo.username || "",
         role: employeeInfo.role || "",
         userEmail: employeeInfo.email || "",
-        status: employeeInfo.status || ""
+        status: employeeJobInfo.status || ""
       });
+      setIsOpenViewEmployeeModel(true);
+    }).catch(error => {
+      console.log('error', error);
+    });
+  };
 
+
+  const fetchEmployeeInfoForEdit = (id:number ,user_id:number) => {
+    axios.post('http://localhost:3002/api/get-Employee-Info-And-Employee-Job-Info', {
+      employeeJobId: id, // Replace with actual employeeJobId
+      employeeId: user_id,     // Replace with actual employeeId
+    }).then(response => {
+      const { employeeInfo, employeeJobInfo } = response.data;
+      setEditData({
+        id:employeeJobInfo.id || "",
+        title: employeeJobInfo.title || "",
+        firstName: employeeJobInfo.firstName || "",
+        lastName: employeeJobInfo.lastName || "",
+        dateOfBirth: employeeJobInfo.dateOfBirth || "",
+        email: employeeJobInfo.email || "",
+        contactNumber: employeeJobInfo.contactNumber || "",
+        address: employeeJobInfo.address || "",
+        postcode: employeeJobInfo.postcode || "",
+        landlordName: employeeJobInfo.landlordName || "",
+        landlordContactNumber: employeeJobInfo.landlordContactNumber || "",
+        landlordEmail: employeeJobInfo.landlordEmail || "",
+        agentName: employeeJobInfo.agentName || "",
+        agentContactNumber: employeeJobInfo.agentContactNumber || "",
+        agentEmail: employeeJobInfo.agentEmail || "",
+        heatingType: employeeJobInfo.heatingType || "",
+        propertyType: employeeJobInfo.propertyType || "",
+        epcRating: employeeJobInfo.epcRating || "",
+        serviceType: employeeJobInfo.serviceType || "",
+        assessmentDate: employeeJobInfo.assessmentDate || "",
+        notes: employeeJobInfo.notes || "",
+        month: employeeJobInfo.month || "",
+        year: employeeJobInfo.year || "",
+        username: employeeInfo.username || "",
+        role: employeeInfo.role || "",
+        userEmail: employeeInfo.email || "",
+        status: employeeJobInfo.status || ""
+      });
       setIsOpenEditEmployeeModel(true);
     }).catch(error => {
       console.log('error', error);
@@ -300,10 +288,8 @@ export const AllJobsTable = () => {
 
     } catch (err) {
       console.log(err);
-      // setError('Failed to fetch employee data.');
     } finally {
       console.log("unCatch error");
-      // setLoading(false);
     }
   };
 

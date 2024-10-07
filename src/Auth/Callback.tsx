@@ -28,27 +28,22 @@ const Callback = () => {
       const token = localStorage.getItem('authToken'); // Replace 'yourTokenKey' with the actual key you used to store the token
       if (!token) {
         console.error('Token not found in local storage.');
-        navigate('/login'); // Redirect to login or another appropriate page
+        navigate('/login');
         return;
       }
-
-      // Send the authorization code to your server with the token in the headers
       const response = await axios.post(
         'http://localhost:3002/api/auth/callback',
         { code },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      // Handle the response, e.g., save tokens to local storage or show success message
       console.log('Authorization successful:', response.data);
-      //navigate('/addjobs'); // Redirect to a success page or the next step in your app
+     navigate(response.data);
     } catch (error) {
       console.error('Error handling authorization code:', error);
-     // navigate('/error'); // Redirect to an error page or handle accordingly
     }
   };
 

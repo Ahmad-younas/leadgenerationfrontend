@@ -2,7 +2,6 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
   ModalCloseButton,
   ModalBody,
   Box,
@@ -59,8 +58,6 @@ interface AuthModalProps {
 
 
 export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onCloseModel, data }) => {
-
-  console.log("Data",data);
   const initialRef = useRef<HTMLInputElement>(null);
   const finalRef = useRef<HTMLInputElement>(null);
 
@@ -118,9 +115,6 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
                             isReadOnly={true}
                           />
                         </InputGroup>
-
-
-
                       </FormControl>
                       <FormControl >
                         <FormLabel htmlFor="lastName">Last Name</FormLabel>
@@ -290,7 +284,8 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
                     }}
                   >
                     <Stack spacing={4}>
-                      <Heading >Property Details Section</Heading>
+                      <Heading pt={'4'}
+                               fontSize={"x-large"} >Property Details Section</Heading>
                       <FormControl >
                         <FormLabel htmlFor="heatingType">Heating Type</FormLabel>
                         <Input
@@ -339,7 +334,8 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
                     }}
                   >
                     <Stack spacing={4}>
-                      <Heading >Measures Details</Heading>
+                      <Heading pt={'4'}
+                               fontSize={"x-large"}>Measures Details</Heading>
                       <FormControl >
                         <FormLabel htmlFor="serviceType">Service Type</FormLabel>
                         <Input
@@ -374,52 +370,34 @@ export const ViewEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
                           isReadOnly={true}
                         />
                       </FormControl>
-                      <ModalFooter>
-                        <Button onClick={onCloseModel}>Close</Button>
-                      </ModalFooter>
                     </Stack>
+                  </Box>
+                  <Box
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: '15px',
+                      width: '100%',
+                      padding: '15px',
+                      margin: '15px 10px 10px 0px',
+                    }}
+                  >
                     <Stack spacing={4}>
-                      <Heading >Measures Details</Heading>
+                      <Heading pt={'4'}
+                               fontSize={"x-large"}>Job Status</Heading>
                       <FormControl >
-                        <FormLabel htmlFor="serviceType">Service Type</FormLabel>
+                        <FormLabel htmlFor="serviceType">Status</FormLabel>
                         <Input
-                          defaultValue={data.serviceType}
+                          id={"status"}
+                          defaultValue={data.status}
                           isReadOnly={true}
                         />
                       </FormControl>
-
-                      <FormControl >
-                        <FormLabel htmlFor="assessmentBirth">
-                          Retrofit Assessment Date
-                        </FormLabel>
-                        <InputGroup>
-                          <InputLeftElement pointerEvents={'none'}>
-                            <FontAwesomeIcon
-                              icon={faCalendarDays}
-                              color="#CBD5E0"
-                            />
-                          </InputLeftElement>
-                          <Input
-                            defaultValue={data.assessmentDate}
-                            isReadOnly={true}
-                          />
-                        </InputGroup>
-                      </FormControl>
-
-                      <FormControl >
-                        <FormLabel htmlFor="note">Note</FormLabel>
-                        <Textarea
-                          id="note"
-                          defaultValue={data.notes}
-                          isReadOnly={true}
-                        />
-                      </FormControl>
-                      <ModalFooter>
-                        <Button onClick={onCloseModel}>Close</Button>
-                      </ModalFooter>
                     </Stack>
                   </Box>
                 </Box>
+                <ModalFooter>
+                  <Button onClick={onCloseModel}>Close</Button>
+                </ModalFooter>
               </Box>
             </form>
           </Box>

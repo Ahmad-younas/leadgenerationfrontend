@@ -51,7 +51,6 @@ export const AddEmployee: React.FC = () => {
   const toast = useToast();
   const textColor = useColorModeValue('gray.700', 'white');
   const onSubmit = async (data: FormValues) => {
-    console.log('data', data);
     try {
       const response = await axios.post(
         'http://localhost:3002/api/add-employee',

@@ -2,10 +2,8 @@ import {
   getLastPathSegment,
   getSecondLastPathSegment,
 } from '../../../../../RoutePath/Path';
-import { NavbarLinks } from '../../../../../Components/Navbar/NavbarLinks';
 import React, { useEffect, useState } from 'react';
-import { Statistics } from '../Statistics';
-import { Box, Button, Flex, Heading, HStack, Skeleton, SkeletonText, useColorModeValue } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, HStack, SkeletonText, useColorModeValue } from '@chakra-ui/react';
 import { Employees } from './Employees';
 import axios from 'axios';
 import { ArrowBackIcon, ArrowForwardIcon } from '@chakra-ui/icons';
@@ -31,11 +29,8 @@ export const EmployeeTable = () => {
         const response = await axios.get(
           'http://localhost:3002/api/all-employee/'
         );
-        console.log('response:', response.data);
         setEmployeeData(response.data.data);
-        console.log('responseMeta:', response.data.meta);
         setMetaData(response.data.meta);
-        console.log('metadata',metaData?.totalPages);
       } catch (err) {
         setError('Failed to fetch employee data.');
       } finally {
@@ -62,7 +57,6 @@ export const EmployeeTable = () => {
             }
           }
         );
-        console.log('response:', response.data);
         setEmployeeData(response.data.data);
         setMetaData(response.data.meta);
       } catch (err) {

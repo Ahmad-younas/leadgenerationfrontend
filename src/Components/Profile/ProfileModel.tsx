@@ -12,12 +12,13 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  useToast,
+  useToast, InputGroup, InputRightElement,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import axios from 'axios';
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -50,6 +51,8 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
   const toast = useToast();
 
   const [loading, setLoading] = useState(false);
+  const [show, setShow] = React.useState(false);
+  const handleClick = () => setShow(!show);
 
   // Initialize default data
   const [defaultData, setDefaultData] = useState<AdminData>({
@@ -162,7 +165,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) =
 
               <FormControl mt={4} isInvalid={!!errors.password}>
                 <FormLabel>Password</FormLabel>
-                <Input placeholder="Password" type="password" {...register('password')} />
+                <InputGroup>
+                  <Input placeholder="Password" type={show ? 'text' : 'password'} {...register('password')} />
+                  <InputRightElement width='4.5rem'>
+                    <Button h='1.75rem' size='sm' onClick={handleClick}>
+                      {show ? <ViewIcon/> : <ViewOffIcon/>}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
                 <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
               </FormControl>
 

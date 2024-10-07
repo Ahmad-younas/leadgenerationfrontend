@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
-import { lineChartData, lineChartOptions } from '../../../../../general';
+import {lineChartOptions } from '../../../../../general';
 import axios from 'axios';
 
 // Define the types for the state
@@ -26,10 +26,7 @@ export class LineChart extends React.Component<{}, LineChartState> {
     try {
       // Call the API to get total jobs per month
       const response = await axios.get('http://localhost:3002/api/get-monthly-count-job'); // Adjust the API endpoint as necessary
-
-      // Assuming the API returns an array of job counts like [5, 10, 15, ...]
       const jobCounts = response.data.map((item:JobCount) => item.total_jobs_on_each_month);
-      console.log("JobCounts",jobCounts);
 
       // Update the chart data with the API response
       this.setState({

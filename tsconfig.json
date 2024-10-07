@@ -15,7 +15,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["@types/apexcharts"]
+    "types": ["@types/apexcharts"],
+    "paths": {
+      "*": ["src/*"]
+    }
   },
   "include": ["src"]
 }

@@ -8,7 +8,6 @@ import {
   Box,
   FormControl,
   Button,
-  ModalFooter,
   FormLabel,
   Input,
   Heading,
@@ -21,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAddressBook, faCalendarDays, faStarHalfStroke, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faAddressBook, faCalendarDays, faUser } from '@fortawesome/free-solid-svg-icons';
 import { EmailIcon } from '@chakra-ui/icons';
 import axios from 'axios';
 
@@ -139,6 +138,7 @@ export const EditEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
       setValue('notes', data.notes);
       setValue('month',data.month);
       setValue('year',data.year);
+      setValue('status',data.status);
     }
   }, [isOpenModel,data, setValue]);
 
@@ -595,6 +595,35 @@ export const EditEmployeeJob: React.FC<AuthModalProps> = ({ isOpenModel, onClose
 
                         <FormErrorMessage>
                           {errors.notes?.message}
+                        </FormErrorMessage>
+                      </FormControl>
+                    </Stack>
+                  </Box>
+                  <Box
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: '15px',
+                      width: '100%',
+                      padding: '15px',
+                      margin: '15px 10px 10px 0px',
+                    }}
+                  >
+                    <Stack spacing={4}>
+                      <Heading fontSize={'x-large'}>Jon Info</Heading>
+                      <FormControl isInvalid={!!errors.status}>
+                        <FormLabel htmlFor="status">Job Status</FormLabel>
+                        <Select
+                          id='status'
+                          {...register('status')}
+                          defaultValue={data.status}
+                        >
+                          <option value='Submitted'>Submitted</option>
+                          <option value='Canceled'>Canceled</option>
+                          <option value='Insulated'>Insulated</option>
+                          <option value='Booked'>Booked</option>
+                        </Select>
+                        <FormErrorMessage>
+                          {errors.status?.message}
                         </FormErrorMessage>
                       </FormControl>
                     </Stack>

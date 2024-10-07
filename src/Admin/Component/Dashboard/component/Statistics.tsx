@@ -1,6 +1,4 @@
-// Chakra imports
 import { Flex, SimpleGrid, useColorModeValue } from '@chakra-ui/react';
-// Custom icons
 import { BookedIcon, CancelIcon, IsolatedIcon, SubmittedIcon } from '../../../../Components/Icons/Icons';
 import React, { useEffect, useState } from 'react'; // Import useEffect and useState
 import axios from 'axios'; // Import Axios
@@ -25,7 +23,6 @@ export const Statistics: React.FC = () => {
       axios
         .get<StatusCountResponse>(`http://localhost:3002/api/getStatusCountOfJobs`, { params: { user_id: user.id } })
         .then((response) => {
-          console.log("responseData",response.data);
           setStatistics(response.data);
         })
         .catch((error) => {
@@ -33,7 +30,6 @@ export const Statistics: React.FC = () => {
         });
     }
   }, []);
-console.log("statistics",statistics);
   const totalBooked = statistics.find(item => item.status === 'Booked')?.status_count || 0;
   const totalInsulated = statistics.find(item => item.status === 'Insulated')?.status_count || 0;
   const totalSubmitted = statistics.find(item => item.status === 'Submitted')?.status_count || 0;

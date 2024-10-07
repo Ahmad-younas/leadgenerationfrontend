@@ -5,12 +5,13 @@ import {
   StatsIcon,
   SettingsIcon,
   EmployeeIcon,
-  AllJobsIcon, AddJobsIcon,
+  AllJobsIcon, AddJobsIcon, CalendarIcon,
 } from '../Components/Icons/Icons';
 import { Employees } from '../Admin/Component/Dashboard/component/Employees';
 import { Setting } from '../Admin/Component/Dashboard/component/Setting';
 import { AllJobs } from '../Admin/Component/Dashboard/component/AllJobs';
 import { AddJobs } from '../Employee/AddJobs';
+import { Calendar } from '../Employee/Calendar';
 
 export let dashRoutes = [
   {
@@ -42,6 +43,13 @@ export let dashRoutes = [
     component: AddJobs,
     layout: '/admin',
 
+  },
+  {
+    path: '/calendar',
+    name: 'Calendar',
+    icon: <CalendarIcon color="inherit" />,
+    component: Calendar,
+    layout: '/admin',
   },
   {
     path: '/setting',

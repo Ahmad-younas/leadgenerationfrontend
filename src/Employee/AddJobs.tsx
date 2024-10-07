@@ -105,32 +105,15 @@ export const AddJobs: React.FC = () => {
       user_id:id,
       ...data
     }
-    // try {
-    //   // Make a GET request to the server to get the Google authorization URL
-    //   const response = await axios.get('http://localhost:3002/api/auth/google');
-    //
-    //   // Extract the URL from the response data
-    //   const { url } = response.data;
-    //   console.log("URL",url);
-    //   Logger.info(`URL:${url}`);
-    //
-    //   // Redirect the user to Google's authorization page
-    //   window.location.href = url;
-    // } catch (error) {
-    //   // Check if the error is an Axios error and handle accordingly
-    //   if (axios.isAxiosError(error)) {
-    //     console.error('Error generating authorization URL:', error.response?.data || error.message);
-    //   } else {
-    //     console.error('Unexpected error:', error);
-    //   }
-    // }
     try{
+      setLoading(true);
       const response = await  axios.post('http://localhost:3002/api/add-job', newData, {
         withCredentials:true,
         headers: {
           Authorization: `Bearer ${token}`, // Include the token in the Authorization header
         },
       });
+      console.log("Response",response);
       if (response.status === 201) {
         toast({
           title: 'Job Status.',
@@ -140,6 +123,7 @@ export const AddJobs: React.FC = () => {
           isClosable: true,
           position: 'top-right',
         });
+        setLoading(false);
         reset();
       }else if(response.status === 204){
         setLoading(true);
@@ -147,17 +131,37 @@ export const AddJobs: React.FC = () => {
         reset();
       }
     }catch (error){
+      console.log("error",error);
       if (axios.isAxiosError(error)) {
+        if(error?.response?.data.error ==="Employee not authenticated with Google"){
+          axios.get('http://localhost:3002/api/auth/google')
+            .then((response) => {
+              const { url } = response.data;
+              console.log("URL", url);
+              window.location.href = url;
+            })
+            .catch((error) => {
+              if (axios.isAxiosError(error)) {
+                console.error('Error generating authorization URL:', error.response?.data || error.message);
+              } else {
+                console.error('Unexpected error:', error);
+              }
+            });
+        }
+        console.log("error",error?.response?.status);
+        console.log("error",error?.response?.data.error);
         toast({
           title: 'Job Status.',
-         // description: error.response?.data.error.errors[0].message,
+          //description: error.response?.data.error.errors[0].message,
           status: 'error',
           duration: 5000,
           isClosable: true,
           position: 'top-right',
         });
       } else {
-        console.error('An unexpected error occurred', error);
+        if (error instanceof Error) {
+          console.error('Error message:', error.message);
+        }
       }
     }
 

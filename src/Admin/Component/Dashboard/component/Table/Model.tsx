@@ -82,7 +82,6 @@ export const Model: React.FC<AuthModalProps> = ({
           }
         }
       );
-      console.log('response',response);
       if(response.status === 200){
         toast({
           title: 'Update Status.',

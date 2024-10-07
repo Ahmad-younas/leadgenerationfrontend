@@ -18,7 +18,7 @@ import { useSelector } from 'react-redux';
 import React from 'react';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import Callback from './Auth/Callback';
-import DropboxIntegration from './Auth/DropboxIntegration';
+import SpreadSheetIntegration from './Auth/SpreadSheetIntegration';
 import { DropboxCallback } from './Auth/DropboxCallback';
 
 interface PrivateRoutePage {
@@ -33,7 +33,6 @@ const PrivateRoutes: React.FC<PrivateRoutePage> = ({
   ...rest
 }) => {
   const user  = useSelector((state: RootState)=> state.auth.user);
-  console.log('user' + user);
   if (!user) {
     return <Navigate to="/" />;
   }
@@ -80,7 +79,7 @@ const App: React.FC = () => {
 
           <Route path="/auth/callback" element={<Callback/>}/>
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/dropboxAuth" element={<DropboxIntegration />} />
+          <Route path="/auth/spreadSheet" element={<SpreadSheetIntegration />} />
           <Route path="/dropbox/callback" element={<DropboxCallback/>} />
           <Route path="/recover-password" element={<RecoverPassword />} />
           <Route path={'/404page'} element={<NotFound />} />

@@ -55,9 +55,7 @@ export const Employees: React.FC<cardTableProps> = ({
     row.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
     row.password.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  console.log('Updated Employees:', employees);
   useEffect(() => {
-    console.log('Updated Employees:', employees); // Debugging line
   }, [employees]);
 
   const handleSelectAll = (isChecked: boolean) => {
@@ -66,7 +64,6 @@ export const Employees: React.FC<cardTableProps> = ({
     } else {
       setSelectedEmployees([]);
     }
-    console.log("selectAll",selectedEmployees);
   };
 
 
@@ -97,7 +94,6 @@ export const Employees: React.FC<cardTableProps> = ({
         prevEmployees.filter((employee) => !selectedEmployees.includes(employee.id))
       );
       setSelectedEmployees([]);
-      console.log('Employees deleted successfully:', response.data);
       setSelectedEmployees([]);
     } catch (error) {
       console.error('Error deleting selected employees:', error);
